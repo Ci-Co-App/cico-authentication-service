@@ -15,6 +15,11 @@ app.use(cors({
 app.use(express.json());
 app.use("/api/cico/auth", require("./routes/authRoutes"));
 
+// Add a route for the root URL
+app.get("/", (req, res) => {
+    res.send("Welcome to API Auth");
+});
+
 // Sync Database
 (async () => {
     try {
