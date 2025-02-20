@@ -1,18 +1,23 @@
-# Use the full Node.js image instead of Alpine
-FROM node:18-alpine
+# Use an official Node.js runtime as the base image
+FROM node:18
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json first (for efficient caching)
 COPY package*.json ./
-RUN npm install --omit=dev  # Ensure production dependencies are installed
 
-# Copy the rest of the application
+# Install only production dependencies
+RUN npm install --omit=dev
+
+# Copy the rest of the application files
 COPY . .
 
-# Ensure the container listens on the correct port
+# Ensure Cloud Run uses the correct port
+ENV PORT=8080
+
+# Expose the required port
 EXPOSE 8080
 
-# Start the app
+# Start the application
 CMD ["node", "src/server.js"]
