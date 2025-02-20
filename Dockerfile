@@ -1,20 +1,18 @@
-# Use Node.js official image
-FROM node:18-alpine
+# Use the full Node.js image instead of Alpine
+FROM node:18
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and install dependencies
 COPY package*.json ./
+RUN npm install --omit=dev  # Ensure production dependencies are installed
 
-# Install dependencies
-RUN npm install
-
-# Copy application files
+# Copy the rest of the application
 COPY . .
 
-# Expose the application port
+# Ensure the container listens on the correct port
 EXPOSE 8080
 
-# Run the application
+# Start the app
 CMD ["node", "src/server.js"]

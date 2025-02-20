@@ -15,22 +15,26 @@ app.use(cors({
 app.use(express.json());
 app.use("/api/cico/auth", require("./routes/authRoutes"));
 
-// Add a route for the root URL
+// Root Route
 app.get("/", (req, res) => {
     res.send("Welcome to API Auth");
 });
 
-// Sync Database
-(async () => {
+// Ensure the database is connected before starting the server
+const startServer = async () => {
     try {
         await sequelize.authenticate();
-        console.log("Database connected successfully!");
+        console.log("✅ Database connected successfully!");
         await sequelize.sync();
-        console.log("Database Synced");
-    } catch (error) {
-        console.error("Database connection error:", error);
-    }
-})();
+        console.log("✅ Database Synced");
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+        // Start the server after database connection
+        const PORT = process.env.PORT || 8080;
+        app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    } catch (error) {
+        console.error("❌ Database connection error:", error);
+        process.exit(1); // Exit the app if DB fails to connect
+    }
+};
+
+startServer();
