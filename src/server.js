@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use("/api/cico/auth", require("./routes/authRoutes"));
 
-// Root Route
+// Root Route for health check
 app.get("/", (req, res) => {
     res.send("Welcome to API Auth");
 });
@@ -28,9 +28,9 @@ const startServer = async () => {
         await sequelize.sync();
         console.log("✅ Database Synced");
 
-        // Start the server after database connection
+        // Ensure the app listens on the correct port
         const PORT = process.env.PORT || 8080;
-        app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+        app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Server running on port ${PORT}`));
     } catch (error) {
         console.error("❌ Database connection error:", error);
         process.exit(1); // Exit the app if DB fails to connect
