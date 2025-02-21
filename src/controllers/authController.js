@@ -6,17 +6,29 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
-        // Check if email already exists
+        // Cek apakah semua field terisi
+        if (!name || !email || !password || !role) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+
+        // Pastikan password adalah string
+        if (typeof password !== "string") {
+            return res.status(400).json({ message: "Invalid password format. Must be a string." });
+        }
+
+        // Cek apakah email sudah ada
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ message: "Email already exists. Please use a different email." });
         }
 
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         const photo_profile = `https://ui-avatars.com/api/?name=${name}&background=random`;
 
-        // Create user
+        // Buat user baru
         const user = await User.create({
             name,
             email,
@@ -30,7 +42,6 @@ exports.register = async (req, res) => {
     } catch (error) {
         console.error("Registration Error:", error);
 
-        // Handle Sequelize unique constraint error
         if (error.name === "SequelizeUniqueConstraintError") {
             return res.status(400).json({ message: "Email already exists. Please use a different email." });
         }
