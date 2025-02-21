@@ -1,23 +1,22 @@
-# Use an official Node.js runtime as the base image
-FROM node:18
+FROM node:18-alpine
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json first (for efficient caching)
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm install --omit=dev
+# Install dependencies
+RUN npm install 
 
-# Copy the rest of the application files
+# Copy the rest of the application code
 COPY . .
 
-# Set environment variables (Cloud Run automatically sets PORT=8080)
-ENV PORT=8080
-
-# Expose the correct port
+# Expose the port the app runs on
 EXPOSE 8080
 
+# Set environment variables
+ENV PORT=8080
+
 # Start the application
-CMD ["node", "src/server.js"]
+CMD ["node", "server.js"]
